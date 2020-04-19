@@ -1,0 +1,6 @@
+<!--index.wxml-->
+<view class="container">
+  <view>
+    <navigator url="../home/home">进入主页</navigator>
+  </view>
+</view>
