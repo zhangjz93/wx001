@@ -2,8 +2,9 @@
 <view>
   <view class="canvas-title">请滑动屏幕完成轨迹</view>
   <view class="canvas-main" style="margin-top: 30rpx;">
-    <canvas id="pwd" type="2d" style="width: 750rpx; height: 300rpx; border:1px #ccc solid;">
+    <canvas canvas-id="pwd" style="border:1px #ccc solid;">
     
     </canvas>
+    <button bindtap="initCanvas">dianwo</button>
   </view>
 </view>
