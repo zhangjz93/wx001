@@ -18,6 +18,7 @@ Page({
       {id: 1, x: 90, y: 90, flag: false},
       {id: 2, x: 150, y: 70, flag: false}
     ],
+    isChangeColor: [false, false, false],  //是否改变颜色的标记
     pointStorage: [],  //按顺序存放点id
     lastMoveToX: 0,  //画线起点
     lastMoveToY: 0
@@ -79,7 +80,7 @@ Page({
     ctx.draw();
   }, 
 
-  drawGrey: function(ctx, idx) {
+  drawGrey: function(ctx, idx) { 
     ctx.beginPath();
     ctx.arc(this.data.points[idx].x, this.data.points[idx].y, 10, 2*Math.PI);
     ctx.setFillStyle('#999');
@@ -100,7 +101,7 @@ Page({
     var points = this.data.points;
     var ctx = this.data.canvasCtx;
     for(var i=0; i<points.length; i++) {
-      if(points[i].flag) {
+      if(this.data.isChangeColor[i]) {
         this.drawRed(ctx, i);
       } else {
         this.drawGrey(ctx, i);
@@ -129,7 +130,7 @@ Page({
         this.data.lastMoveToX =  points[i].x;
         this.data.lastMoveToY = points[i].y;
         //record
-        points[i].flag = true;
+        this.data.isChangeColor[i] = true;
         break;
       }
     }
@@ -145,7 +146,7 @@ Page({
 
     for(var i=0; i<this.data.points.length; i++) {
       if(this.isCircle(points[i].x, points[i].y, currentX, currentY)) {
-        points[i].flag = true;
+        this.data.isChangeColor[i] = true;
         this.data.lastMoveToX =  points[i].x;
         this.data.lastMoveToY = points[i].y;
         break;
@@ -184,9 +185,9 @@ Page({
   cancelPoint: function(e) {
     this.initCanvas();
     //清空记录点
-    this.setData({
-      pointStorage: []
-    });
+    this.data.pointStorage = [];
+    //还原状态
+    this.data.isChangeColor.fill(false);
   },
 
   /**
