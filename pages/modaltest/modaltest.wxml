@@ -1,0 +1,8 @@
+<!--pages/modaltest/modaltest.wxml-->
+<view class="all">
+	你好啊
+</view>
+<view class="modal-container"></view>
+<view class="modal-content">
+  这是遮罩层的内容
+</view>

@@ -2,7 +2,8 @@
   "pages":[
     "pages/home/home",
     "pages/shopcart/shopcart",
-    "pages/my/my"
+    "pages/my/my",
+    "pages/modaltest/modaltest"
   ],
   "tabBar": {
     "selectedColor": "#d4237a",
@@ -13,7 +14,7 @@
       "selectedIconPath": "images/icons/home_pink.png"
     }, 
     {
-      "pagePath": "pages/shopcart/shopcart",
+      "pagePath": "pages/modaltest/modaltest",
       "text": "购物车",
       "iconPath": "images/icons/cart.png",
       "selectedIconPath": "images/icons/cart_pink.png"
