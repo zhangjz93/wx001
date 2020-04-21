@@ -3,7 +3,7 @@
   <view class="canvas-main">
     <canvas canvas-id="pwd" style="border:1px #ccc solid; width:{{width}}px; height: {{height}}px; " 
             bindtouchmove="genLine"
-            bindtouchstart="calcPoint0"
+            bindtouchstart="beginTouch"
             bindtouchend="cancelPoint">
     
     </canvas>

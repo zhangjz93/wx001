@@ -13,7 +13,7 @@ Page({
     R: 25,    //真实半径
     points: [],
     isChangeColor: [false, false, false, false, false, false, false, false, false],  //是否改变颜色的标记
-    pointStorage: [],  //按顺序存放点id
+    pointStorage: [],  //按顺序存放点索引
     lastMoveToX: 0,  //画线起点
     lastMoveToY: 0
   },
@@ -27,10 +27,16 @@ Page({
     });
   },
 
+  /**
+   * 初始化半径
+   */
   initR: function() {
     this.data.R = this.resize(this.data.r);
   },
 
+  /**
+   * 初始化点矩阵
+   */
   initPoints: function() {
     var po = [
       {x: this.resize(80), y: this.resize(80)},
@@ -94,6 +100,11 @@ Page({
     ctx.draw();
   }, 
 
+  /**
+   * 画灰点
+   * @param {*} ctx 
+   * @param {*} idx 
+   */
   drawGrey: function(ctx, idx) { 
     ctx.beginPath();
     ctx.arc(this.data.points[idx].x, this.data.points[idx].y, this.data.R, 2*Math.PI);
@@ -101,11 +112,32 @@ Page({
     ctx.fill();
   },
 
+  /**
+   * 画选中的点
+   * @param {*} ctx 
+   * @param {*} idx 
+   */
   drawRed: function(ctx, idx) {
     ctx.beginPath();
     ctx.arc(this.data.points[idx].x, this.data.points[idx].y, this.data.R, 2*Math.PI);
     ctx.setFillStyle('red');
-    ctx.fill();
+    ctx.fill(); 
+  },
+
+  /**
+   * 画直线
+   * @param {*} ctx 
+   * @param {*} startX 
+   * @param {*} startY 
+   * @param {*} endX 
+   * @param {*} endY 
+   */
+  drawLine: function(ctx, startX, startY, endX, endY) {
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);  //移动到最后一组选中的位置
+    ctx.setStrokeStyle("red"); 
+    ctx.lineTo(endX, endY);
+    ctx.stroke();
   },
 
   /**
@@ -114,6 +146,7 @@ Page({
   rePaint: function() {
     var points = this.data.points;
     var ctx = this.data.canvasCtx;
+    var pointStorage = this.data.pointStorage; 
     for(var i=0; i<points.length; i++) {
       if(this.data.isChangeColor[i]) {
         this.drawRed(ctx, i);
@@ -121,37 +154,40 @@ Page({
         this.drawGrey(ctx, i);
       }
     }
+    //画之前生成的直线
+    for(var i=0; i<pointStorage.length && (i+1)<pointStorage.length; i++) {
+      this.drawLine(ctx, points[pointStorage[i]].x, points[pointStorage[i]].y, points[pointStorage[i+1]].x, points[pointStorage[i+1]].y);
+    }
   },
 
   /**
    * 首次触摸屏幕进行绘制
-   * @param {*} e 
+   * @param {} e 
    */
-  calcPoint0: function(e) {
+  beginTouch: function(e) {
     var currentX = e.changedTouches[0].x;
     var currentY = e.changedTouches[0].y;
     var ctx = this.data.canvasCtx;
-    var points = this.data.points;
-
-    for(var i=0; i<this.data.points.length; i++) {
-      if(this.isCircle(points[i].x, points[i].y, currentX, currentY)) {
-        this.data.isChangeColor[i] = true;
-        this.data.lastMoveToX =  points[i].x;
-        this.data.lastMoveToY = points[i].y;
-        break;
-      }
-    }
+   // var points = this.data.points;
+    this.pointIn(currentX, currentY);  //检查点的选中情况
     this.rePaint();
     ctx.draw();
   },
 
   pointIn: function(x, y) {
     var points = this.data.points;
+    var pointStorage = this.data.pointStorage;
     for(var i=0; i<this.data.points.length; i++) {
       if(this.isCircle(points[i].x, points[i].y, x, y)) {
         this.data.isChangeColor[i] = true;
         this.data.lastMoveToX =  points[i].x;
         this.data.lastMoveToY = points[i].y;
+        //记录点顺序
+        if(pointStorage.length==0 || pointStorage.length>0 && pointStorage[pointStorage.length-1] != i) {
+          this.data.pointStorage.push(i);
+        }
+        console.log("记录了一个点-----");
+        console.log(this.data.pointStorage);
         return;
       }
     }
@@ -168,11 +204,7 @@ Page({
     this.pointIn(currentX, currentY);
     
     //连线
-    ctx.beginPath();
-    ctx.moveTo(this.data.lastMoveToX, this.data.lastMoveToY);
-    ctx.setStrokeStyle("red");
-    ctx.lineTo(currentX, currentY);
-    ctx.stroke();
+    this.drawLine(ctx, this.data.lastMoveToX, this.data.lastMoveToY, currentX, currentY);
     //连同之前状态重画
     this.rePaint();
     ctx.draw();
@@ -186,7 +218,7 @@ Page({
     this.initCanvas();
     //清空记录点
     this.data.pointStorage = [];
-    //还原状态
+    //还原点状态
     this.data.isChangeColor.fill(false);
   },
 
